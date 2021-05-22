@@ -1,33 +1,34 @@
 package framework;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import framework.models.NewTestCaseResultRequest;
+import io.qase.api.QaseApiClient;
 import io.qase.api.inner.GsonObjectMapper;
-import io.qase.api.models.v1.testrunresults.NewTestRunResults;
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
+import io.qase.api.models.v1.testrunresults.TestRunResult;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestInstance;
-import kong.unirest.json.JSONObject;
 
 public class TestCaseResultManager {
 
-    private final UnirestInstance client;
+    private final QaseApiClient client;
 
     public TestCaseResultManager() {
-        client = Unirest.spawnInstance();
-        client.config()
-              .setObjectMapper(new GsonObjectMapper())
-              .addShutdownHook(true)
-              .setDefaultHeader("Token", "9cc2fafc22ded2940b975d4d6f4b0f99cf603ff2");
+        UnirestInstance unirestInstance = Unirest.spawnInstance();
+        unirestInstance.config()
+                       .setObjectMapper(new GsonObjectMapper())
+                       .addShutdownHook(true)
+                       .setDefaultHeader("Token", "9cc2fafc22ded2940b975d4d6f4b0f99cf603ff2");
+        client = new QaseApiClient(unirestInstance, "https://api.qase.io/v1");
     }
 
-    public void createTestCaseResult(Class<NewTestRunResults> responseClass, Object payload) {
+    public void createTestCaseResult(NewTestCaseResultRequest testResult) {
 
-        HttpResponse<JsonNode> jsonNodeHttpResponse = client.request("POST", "https://api.qase.io/v1/result/TP1/3")
-                                                            .header("Content-Type", "application/json")
-                                                            .body(payload)
-                                                            .asJson();
-        JSONObject jsonObject = jsonNodeHttpResponse.getBody().getObject();
+        Map<String, Object> routeParams = new HashMap<>();
+        routeParams.put("code", "TP1");
+        routeParams.put("run_id", "3");
 
-        final NewTestRunResults result = client.config().getObjectMapper().readValue(jsonObject.get("result").toString(), responseClass);
+        client.post(TestRunResult.class, "/result/{code}/{run_id}", routeParams, testResult).getHash();
     }
 }

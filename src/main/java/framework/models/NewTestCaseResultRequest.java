@@ -5,7 +5,6 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 import io.qase.api.enums.RunResultStatus;
 import io.qase.api.models.v1.testrunresults.NewTestRunResults;
-import io.qase.api.models.v1.testrunresults.Step;
 
 public class NewTestCaseResultRequest {
     @SerializedName("case_id")
@@ -20,10 +19,6 @@ public class NewTestCaseResultRequest {
     private List<StepRequest> steps;
     private List<String> attachments;
 
-    public Long getCaseId() {
-        return caseId;
-    }
-
     public static NewTestCaseResultRequest fromTestCaseResultRequest(NewTestRunResults newTestRunResults, List<StepRequest> steps) {
         NewTestCaseResultRequest ntcrr = new NewTestCaseResultRequest();
         ntcrr.setAttachments(newTestRunResults.getAttachments());
@@ -36,6 +31,10 @@ public class NewTestCaseResultRequest {
         ntcrr.setTime(newTestRunResults.getTime());
         ntcrr.setSteps(steps);
         return ntcrr;
+    }
+
+    public Long getCaseId() {
+        return caseId;
     }
 
     public void setCaseId(Long caseId) {

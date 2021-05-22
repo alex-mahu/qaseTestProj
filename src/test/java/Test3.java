@@ -4,9 +4,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-public class Test3 {
+public class Test3 extends CoreTestClass {
 
     WebDriver driver;
 
@@ -17,12 +18,12 @@ public class Test3 {
         driver.get("https://google.com");
     }
 
-    @Test
+    @Test(dataProvider = "provideData")
     ///@CaseId(2)
-    public void test1() {
-        new TestCase1(driver)
+    public void test1(String s) {
+        new TestCase1(driver, dataProviderOptions)
                 .step1()
-                .step2()
+                .step2(s)
                 .step3()
                 .finishCase();
     }
@@ -30,5 +31,13 @@ public class Test3 {
     @AfterClass
     public void destroyDriver() {
         driver.quit();
+    }
+
+    @DataProvider
+    public Object[][] provideData() {
+        return new Object[][] {
+                {"Ssssssssss"},
+                {"Tttttttttt"}
+        };
     }
 }
